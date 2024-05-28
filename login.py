@@ -25,9 +25,16 @@ config.read(path, encoding="utf-8")
 sections = config.sections()
 
 
+count = 0
+
 def get_location():
+    
+            # location = input(f"请输入精确小区位置，例如[小区名称]，为你自动预约附近的门店:").strip()
     while 1:
-        location = input(f"请输入精确小区位置，例如[小区名称]，为你自动预约附近的门店:").strip()
+        if count == 0:
+            location = "万科嘉园"
+        else:
+            location = "宝安西乡共乐社区"
         selects = process.select_geo(location)
 
         a = 0
@@ -36,7 +43,8 @@ def get_location():
             province = item['province']
             print(f'{a} : [地区:{province},位置:{formatted_address}]')
             a += 1
-        user_select = input(f"请选择位置序号,重新输入请输入[-]:").strip()
+        # user_select = input(f"请选择位置序号,重新输入请输入[-]:").strip()
+        user_select = "0"
         if user_select == '-':
             continue
         select = selects[int(user_select)]
@@ -50,6 +58,8 @@ if __name__ == '__main__':
 
     aes_key = privateCrypt.get_aes_key()
 
+    phoneList = ["18664350510", "17570871023", "18665330425", "13928423976"]
+    
     while 1:
         process.init_headers()
         location_select: dict = get_location()
@@ -57,12 +67,14 @@ if __name__ == '__main__':
         city = location_select['city']
         location: str = location_select['location']
 
-        mobile = input("输入手机号[13812341234]:").strip()
+        mobile = phoneList[count] if count < len(phoneList) else input("输入手机号[13812341234]:").strip()
+
         process.get_vcode(mobile)
         code = input(f"输入 [{mobile}] 验证码[1234]:").strip()
         token, userId = process.login(mobile, code)
 
-        endDate = input(f"输入 [{mobile}] 截止日期(必须是YYYYMMDD,20230819)，如果不设置截止，请输入9：").strip()
+        # endDate = input(f"输入 [{mobile}] 截止日期(必须是YYYYMMDD,20230819)，如果不设置截止，请输入9：").strip()
+        endDate = "9"
 
         # 为了增加辨识度，这里做了隐私处理，不参与任何业务逻辑
         hide_mobile = mobile.replace(mobile[3:7], '****')
@@ -89,3 +101,5 @@ if __name__ == '__main__':
 
         if condition.lower() == 'n':
             break
+        
+        count += 1
